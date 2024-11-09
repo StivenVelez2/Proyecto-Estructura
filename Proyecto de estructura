@@ -7,9 +7,9 @@ Created on Fri Nov  1 20:00:31 2024
 import pandas as pd
 import time
 import psutil
-from MergeSort_Personas import MergeSort
-from BinarySearch_Personas import BinarySearch
-from TimSort_Personas import TimSort
+from insertionSort import insertionShort
+from BusquedaBinaria import BusquedaBinaria
+#from TimSort_Personas import TimSort
 
 # Definimos la clase Persona con los atributos correspondientes
 class Persona:
@@ -29,13 +29,14 @@ class Persona:
 # Función para medir el tiempo y consumo de RAM
 def medir_tiempo_y_ram(func):
     def wrapper(*args, **kwargs):
-        start_time = time.time()
-        start_ram = psutil.Process().memory_info().rss / 1024 / 1024  # Consumo de RAM en MB
+        start_time = time.perf_counter()
+        start_ram = psutil.Process().memory_full_info().rss / 1024 / 1024  # Consumo de RAM en MB
 
         result = func(*args, **kwargs)
 
-        end_time = time.time()
-        end_ram = psutil.Process().memory_info().rss / 1024 / 1024  # Consumo de RAM en MB
+        end_time = time.perf_counter()
+
+        end_ram = psutil.Process().memory_full_info().rss / 1024 / 1024  # Consumo de RAM en MB
 
         elapsed_time = end_time - start_time  # Tiempo en segundos
         ram_usage = max(end_ram - start_ram, 0)  # Evitar valores negativos de RAM
@@ -45,7 +46,7 @@ def medir_tiempo_y_ram(func):
     return wrapper
 
 # Cargar el CSV usando pandas
-df = pd.read_csv("C:/Users/JUANCHO/OneDrive - Universidad Tecnológica de Pereira/Catedras/Estructuras/06-personas1M.csv")  # Reemplaza "ruta_del_archivo.csv" con la ruta de tu archivo CSV
+df = pd.read_csv("C:/Users/User/Downloads/Proyecto de Estructura/DataSets-20241108T024642Z-001/DataSets/01-personas100.csv")  # Reemplaza "ruta_del_archivo.csv" con la ruta de tu archivo CSV
 
 # Convertir cada fila del DataFrame en un objeto Persona
 lista_personas = [
@@ -66,29 +67,30 @@ lista_personas = [
 #print("Número total de personas:", len(lista_personas))
 
 # Ordenar la lista de objetos Persona por número de documento
-@medir_tiempo_y_ram
+#@medir_tiempo_y_ram
 # def ordenar_personas():
 #     tim_sort = TimSort(lista_personas)
 #     return tim_sort.tim_sort()
 
+@medir_tiempo_y_ram
 def ordenar_personas():
-    merge_sort = MergeSort(lista_personas)
-    return merge_sort.sort()
+    lista_ordenada = insertionShort(lista_personas)
+    return lista_ordenada
 
 personas_ordenadas, tiempo_ordenacion, ram_ordenacion = ordenar_personas()
 print(f"Tiempo de ordenamiento: {tiempo_ordenacion:.6f} segundos")
 print(f"Consumo de RAM durante la ordenación: {ram_ordenacion:.6f} MB")
 
-
+#personas_ordenadas = ordenar_personas()
 
 # Buscar un número de documento específico
 @medir_tiempo_y_ram
-def buscar_persona(numero_documento):
-    binary_search = BinarySearch(personas_ordenadas)
-    return binary_search.search(numero_documento)
+def buscar_persona(numero_documento, personas_ordenadas):
+    #binary_search = BusquedaBinaria(personas_ordenadas)
+    return BusquedaBinaria(numero_documento, personas_ordenadas)
 
-numero_documento_a_buscar = 829979309  # Asegúrate de que el número de documento sea un entero
-persona_encontrada, tiempo_busqueda, ram_busqueda = buscar_persona(numero_documento_a_buscar)
+numero_documento_a_buscar = 933854691  # Asegúrate de que el número de documento sea un entero
+persona_encontrada, tiempo_busqueda, ram_busqueda = buscar_persona(numero_documento_a_buscar, personas_ordenadas)
 
 print(f"Tiempo de búsqueda: {tiempo_busqueda:.6f} segundos")
 print(f"Consumo de RAM durante la búsqueda: {ram_busqueda:.6f} MB")
@@ -100,5 +102,4 @@ else:
     
 # Imprimir los resultados ordenados
 #for persona in personas_ordenadas:
-   # print(persona)
-
+#    print(persona)
